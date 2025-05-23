@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,14 +27,18 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Routes accessibles uniquement aux administrateurs
+    Route::resource('products', ProductController::class);
 });
 
 Route::middleware(['auth', 'role:agent_vente'])->group(function () {
     // Routes accessibles uniquement aux agents de vente
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 });
 
 Route::middleware(['auth', 'role:approvisionneur'])->group(function () {
     // Routes accessibles uniquement aux approvisionneurs
+    Route::resource('products', ProductController::class)->except(['destroy']);
 });
 
 require __DIR__.'/auth.php';
