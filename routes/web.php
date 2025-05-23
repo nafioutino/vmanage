@@ -24,4 +24,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Routes accessibles uniquement aux administrateurs
+});
+
+Route::middleware(['auth', 'role:agent_vente'])->group(function () {
+    // Routes accessibles uniquement aux agents de vente
+});
+
+Route::middleware(['auth', 'role:approvisionneur'])->group(function () {
+    // Routes accessibles uniquement aux approvisionneurs
+});
+
 require __DIR__.'/auth.php';
