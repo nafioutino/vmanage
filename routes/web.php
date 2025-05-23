@@ -25,20 +25,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Routes accessibles uniquement aux administrateurs
-    Route::resource('products', ProductController::class);
-});
-
-Route::middleware(['auth', 'role:agent_vente'])->group(function () {
-    // Routes accessibles uniquement aux agents de vente
+// Routes pour les produits avec différentes permissions selon les rôles
+Route::middleware('auth')->group(function () {
+    // Routes accessibles à tous les rôles authentifiés
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
-});
 
-Route::middleware(['auth', 'role:approvisionneur'])->group(function () {
-    // Routes accessibles uniquement aux approvisionneurs
-    Route::resource('products', ProductController::class)->except(['destroy']);
+    // Routes supplémentaires pour l'approvisionneur
+    Route::middleware('role:approvisionneur')->group(function () {
+        Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('products', [ProductController::class, 'store'])->name('products.store');
+        Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    });
+
+    // Route de suppression réservée à l'admin
+    Route::middleware('role:admin')->group(function () {
+        Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
