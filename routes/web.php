@@ -29,10 +29,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     // Routes accessibles à tous les rôles authentifiés
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
-
-    // Routes supplémentaires pour l'approvisionneur
-    Route::middleware('role:approvisionneur')->group(function () {
+    
+    // Routes supplémentaires pour l'approvisionneur et l'admin
+    Route::middleware('role:admin,approvisionneur')->group(function () {
         Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('products', [ProductController::class, 'store'])->name('products.store');
         Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -43,6 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
+    
+    // Cette route doit être placée après les routes spécifiques pour éviter les conflits
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 });
 
 require __DIR__.'/auth.php';

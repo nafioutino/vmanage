@@ -36,10 +36,15 @@ class ProductController extends Controller
         $products = $query->latest()->paginate(10);
         $categories = Category::all();
 
+        // Assurez-vous que l'utilisateur a ses rôles chargés
+        $user = $request->user();
+        $user->load('roles');
+
         return Inertia::render('Products/Index', [
             'products' => $products,
             'categories' => $categories,
             'filters' => $request->only(['search', 'category_id', 'status']),
+            'userRoles' => $user->roles->pluck('name'),
         ]);
     }
 

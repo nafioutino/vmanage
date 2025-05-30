@@ -10,6 +10,7 @@ const props = defineProps({
     products: Object,
     categories: Array,
     filters: Object,
+    userRoles: Array,
 });
 
 const search = ref(props.filters.search || '');
@@ -52,7 +53,7 @@ watch([search, categoryId, status], () => {
                     Produits
                 </h2>
                 <Link
-                    v-if="$page.props.auth.user.roles?.some(role => ['admin', 'approvisionneur'].includes(role.name))"
+                    v-if="userRoles && (userRoles.includes('admin') || userRoles.includes('approvisionneur'))"
                     :href="route('products.create')"
                     class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900"
                 >
